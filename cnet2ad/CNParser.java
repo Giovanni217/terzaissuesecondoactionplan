@@ -27,6 +27,42 @@ public class CNParser {
         this.filename = filename;
     }
     
+    private void addEdge(Flex graph, String line){
+        line = line.replace("<Edge ", "");
+        line = line.trim();
+        line = line.replace(" \"", "");
+        line = line.replace("\"", "");
+        line = line.replace("/>", "");
+        line = line.trim();
+
+        String src = "";
+        String dest = "";
+
+        String [] pieces = line.split(" ");
+        String [] srcDest = new String[2];
+        srcDest = aEP1(pieces, src, dest);
+        src = srcDest[0];
+        dest = srcDest[1];
+        
+
+        if(src.isEmpty() == false && dest.isEmpty() == false)
+        {
+            String srcActivity = this.dictionary.getValueByKey(src);
+            String destActivity = this.dictionary.getValueByKey(dest);
+
+            FlexNode srcNode = null, destNode = null;
+            for(FlexNode node:graph.getNodes()){
+                if(node.toString().equals(srcActivity))
+                    srcNode = node;
+                else if(node.toString().equals(destActivity))
+                    destNode = node;
+            }
+
+            if(srcNode != null && destNode != null)
+                graph.addArc(srcNode, destNode);
+        }
+    }
+    
     private void addNode(Flex graph, String line){
         line = line.replace("<Node ", "");
         line = line.trim();
@@ -124,40 +160,6 @@ public class CNParser {
         return output;
     }
 
-    private void addEdge(Flex graph, String line){
-        line = line.replace("<Edge ", "");
-        line = line.trim();
-        line = line.replace(" \"", "");
-        line = line.replace("\"", "");
-        line = line.replace("/>", "");
-        line = line.trim();
-
-        String src = "";
-        String dest = "";
-
-        String [] pieces = line.split(" ");
-        String [] srcDest = new String[2];
-        srcDest = aEP1(pieces, src, dest);
-        src = srcDest[0];
-        dest = srcDest[1];
-        
-
-        if(src.isEmpty() == false && dest.isEmpty() == false)
-        {
-            String srcActivity = this.dictionary.getValueByKey(src);
-            String destActivity = this.dictionary.getValueByKey(dest);
-
-            FlexNode srcNode = null, destNode = null;
-            for(FlexNode node:graph.getNodes()){
-                if(node.toString().equals(srcActivity))
-                    srcNode = node;
-                else if(node.toString().equals(destActivity))
-                    destNode = node;
-            }
-
-            if(srcNode != null && destNode != null)
-                graph.addArc(srcNode, destNode);
-        }
-    }
+    
 
 }
