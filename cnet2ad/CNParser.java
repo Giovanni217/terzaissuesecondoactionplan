@@ -26,6 +26,52 @@ public class CNParser {
     public CNParser(String filename){
         this.filename = filename;
     }
+    
+    private void addNode(Flex graph, String line){
+        line = line.replace("<Node ", "");
+        line = line.trim();
+        line = line.replace("\"", "");
+        line = line.replace(">", "");
+
+        String name = "";
+        String id = "";
+
+        String [] pieces = line.split(" ");
+        for(String piece: pieces)
+        {
+            String[] parts = piece.split("=");
+            if(parts.length < 2)
+                continue;
+
+            if(parts[0].equals("name"))
+                name = parts[1];
+            else if(parts[0].equals("id"))
+                id = parts[1];
+        }
+
+        if(name.isEmpty() == false && id.isEmpty() == false)
+        {
+            this.dictionary.add(id, name);
+            graph.addNode(name);
+        }
+    }
+    
+    private void computeBindings(Flex graph){
+        for(FlexNode node:graph.getNodes()){
+            SetFlex input = new SetFlex();
+            SetFlex output = new SetFlex();
+
+            for(FlexEdge<? extends FlexNode, ? extends FlexNode> edges: graph.getEdges()){
+                if(edges.getSource().getLabel().equals(node.getLabel())) {
+                    output.add(edges.getTarget());
+                }
+                else if(edges.getTarget().getLabel().equals(node.getLabel()))
+                    input.add(edges.getSource());
+            }
+            node.getOutputNodes().add(output);
+            node.getInputNodes().add(input);
+        }
+    }
 
     public Flex parse(){
         this.dictionary = new CustomDictionary<String, String>();
@@ -56,51 +102,9 @@ public class CNParser {
         return graph;
     }
     
-    private void computeBindings(Flex graph){
-        for(FlexNode node:graph.getNodes()){
-            SetFlex input = new SetFlex();
-            SetFlex output = new SetFlex();
+    
 
-            for(FlexEdge<? extends FlexNode, ? extends FlexNode> edges: graph.getEdges()){
-                if(edges.getSource().getLabel().equals(node.getLabel())) {
-                    output.add(edges.getTarget());
-                }
-                else if(edges.getTarget().getLabel().equals(node.getLabel()))
-                    input.add(edges.getSource());
-            }
-            node.getOutputNodes().add(output);
-            node.getInputNodes().add(input);
-        }
-    }
-
-    private void addNode(Flex graph, String line){
-        line = line.replace("<Node ", "");
-        line = line.trim();
-        line = line.replace("\"", "");
-        line = line.replace(">", "");
-
-        String name = "";
-        String id = "";
-
-        String [] pieces = line.split(" ");
-        for(String piece: pieces)
-        {
-            String[] parts = piece.split("=");
-            if(parts.length < 2)
-                continue;
-
-            if(parts[0].equals("name"))
-                name = parts[1];
-            else if(parts[0].equals("id"))
-                id = parts[1];
-        }
-
-        if(name.isEmpty() == false && id.isEmpty() == false)
-        {
-            this.dictionary.add(id, name);
-            graph.addNode(name);
-        }
-    }
+    
     
     private static String [] aEP1(String [] pieces, String src, String dest){
         for(String piece: pieces)
