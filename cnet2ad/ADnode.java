@@ -79,6 +79,38 @@ public class ADnode {
         else str.append("OpaqueAction");
         return str;
     }
+    
+    public String toJson(){
+        StringBuilder json = new StringBuilder("{");
+
+        json.append("key: \"");
+        json.append(this.name);
+        json.append("\"");
+
+        json.append(", ");
+
+        json.append("category: \"");
+        json.append(this.type);
+        json.append("\"");
+
+        json.append(", ");
+
+        json.append("color: \"");
+        if(isType(ForkNode))
+            json.append("red");
+        else if(isType(JoinNode))
+            json.append("pink");
+        else if(isType(BranchNode))
+            json.append("cyan");
+        else if(isType(InitialNode) || isType(FinalNode))
+            json.append("black");
+        else json.append("orange");
+        json.append("\"");
+
+        json.append("}");
+
+        return json.toString();
+    }
 
     public String toXMI(String outcoming, String incoming){
         StringBuilder str = new StringBuilder();
@@ -120,37 +152,7 @@ public class ADnode {
         return str.toString();
     }
 
-    public String toJson(){
-        StringBuilder json = new StringBuilder("{");
-
-        json.append("key: \"");
-        json.append(this.name);
-        json.append("\"");
-
-        json.append(", ");
-
-        json.append("category: \"");
-        json.append(this.type);
-        json.append("\"");
-
-        json.append(", ");
-
-        json.append("color: \"");
-        if(isType(ForkNode))
-            json.append("red");
-        else if(isType(JoinNode))
-            json.append("pink");
-        else if(isType(BranchNode))
-            json.append("cyan");
-        else if(isType(InitialNode) || isType(FinalNode))
-            json.append("black");
-        else json.append("orange");
-        json.append("\"");
-
-        json.append("}");
-
-        return json.toString();
-    }
+    
 
     public String toString(){
         StringBuilder str = new StringBuilder();
